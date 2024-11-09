@@ -1,27 +1,48 @@
-use bevy::{asset::LoadState, core_pipeline::Skybox, prelude::*, render::{render_resource::{TextureViewDescriptor, TextureViewDimension}, texture::{ImageSampler, ImageSamplerDescriptor}}, window::{CursorGrabMode, PrimaryWindow}};
+use bevy::{
+    asset::LoadState,
+    core_pipeline::Skybox,
+    prelude::*,
+    render::{
+        render_resource::{TextureViewDescriptor, TextureViewDimension},
+        texture::{ImageSampler, ImageSamplerDescriptor},
+    },
+    window::{CursorGrabMode, PrimaryWindow},
+};
 
 pub mod camera_controller;
 
-fn main(){
+fn main() {
     App::new()
-    .add_plugins(DefaultPlugins)
-    .add_systems(Startup,setup)
-    .add_systems(Update,(camera_controller::update_camera_controller,reinterpret_cubemap))
-    .run();
+        .add_plugins(DefaultPlugins)
+        .add_systems(Startup, setup)
+        .add_systems(
+            Update,
+            (
+                camera_controller::update_camera_controller,
+                reinterpret_cubemap,
+            ),
+        )
+        .run();
 }
 
 #[derive(Resource)]
-pub struct SkyCubeMap{
-    pub image : Handle<Image>,
-    pub loaded : bool,
+pub struct SkyCubeMap {
+    pub image: Handle<Image>,
+    pub loaded: bool,
 }
-fn setup(mut commands : Commands,asset_server : Res<AssetServer>,mut window_query: Query<&mut Window, With<PrimaryWindow>>,){
-
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut window_query: Query<&mut Window, With<PrimaryWindow>>,
+) {
     let mut window = window_query.get_single_mut().unwrap();
     window.cursor.grab_mode = CursorGrabMode::Locked;
     window.cursor.visible = false;
-    let sky_image = asset_server.load("sky.png");
-    commands.insert_resource(SkyCubeMap{image : sky_image.clone(),loaded : false});
+    let sky_image = asset_server.load("skysheet.png");
+    commands.insert_resource(SkyCubeMap {
+        image: sky_image.clone(),
+        loaded: false,
+    });
     commands.spawn((
         Camera3dBundle {
             transform: Transform::IDENTITY,
@@ -32,10 +53,10 @@ fn setup(mut commands : Commands,asset_server : Res<AssetServer>,mut window_quer
             rotation: Vec2::ZERO,
             rotation_lock: 88.0,
         },
-        Skybox{
-            image : sky_image.clone(),
-            brightness : 1000.,
-        }
+        Skybox {
+            image: sky_image.clone(),
+            brightness: 1000.,
+        },
     ));
 }
 
