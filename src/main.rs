@@ -5,7 +5,8 @@ use bevy::{
     render::{
         render_resource::{TextureViewDescriptor, TextureViewDimension},
         texture::{ImageSampler, ImageSamplerDescriptor},
-    }, window::{CursorGrabMode, PrimaryWindow},
+    },
+    window::{CursorGrabMode, PrimaryWindow},
 };
 
 pub mod camera_controller;
@@ -14,7 +15,13 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (camera_controller::update_camera_controller,reinterpret_cubemap))
+        .add_systems(
+            Update,
+            (
+                camera_controller::update_camera_controller,
+                reinterpret_cubemap,
+            ),
+        )
         .run();
 }
 
@@ -24,7 +31,11 @@ pub struct SkyCubeMap {
     pub loaded: bool,
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>,mut window_query : Query<&mut Window,With<PrimaryWindow>>) {
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut window_query: Query<&mut Window, With<PrimaryWindow>>,
+) {
     let sky_image = asset_server.load("skysheet.png");
 
     let mut window = window_query.get_single_mut().unwrap();
@@ -40,10 +51,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>,mut window_query
             transform: Transform::IDENTITY,
             ..Default::default()
         },
-        camera_controller::CameraController{
-            sensitivity : 0.035,
-            rotation : Vec2::ZERO,
-            rotation_lock : 88.0,
+        camera_controller::CameraController {
+            sensitivity: 0.035,
+            rotation: Vec2::ZERO,
+            rotation_lock: 88.0,
         },
         Skybox {
             image: sky_image.clone(),
